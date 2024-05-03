@@ -3,12 +3,7 @@ package Cliente;
 import java.rmi.*;
 import java.util.Scanner;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Cliente {
 
@@ -42,6 +37,7 @@ public static void main(String[] args) {
     
             System.out.println(resConsulta);} 
             else{
+            scanner.close();
             flag=!flag;}
         } while (flag);
 

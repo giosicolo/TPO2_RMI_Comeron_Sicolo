@@ -3,10 +3,8 @@ package ServidorCentral;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.rmi.Naming;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import Cliente.SCServiciosAbstracto;
 
 public class ServidorCentral {
 
@@ -50,8 +48,6 @@ public class ServidorCentral {
             System.out.println("Error de conexion2");
         }
      
-        
-   
     }
 
 }

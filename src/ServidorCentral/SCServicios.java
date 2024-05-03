@@ -1,14 +1,8 @@
 package ServidorCentral;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,13 +11,13 @@ import Cliente.SCServiciosAbstracto;
 
 public class SCServicios extends UnicastRemoteObject implements SCServiciosAbstracto {
     
-    private static int puerto_SH;
-    private static String ip_SH;
-    private static int puerto_SP;
-    private static String ip_SP;
+    private  int puerto_SH;
+    private  String ip_SH;
+    private  int puerto_SP;
+    private  String ip_SP;
 
-    private static ConcurrentHashMap<String, String> historialHoroscopo;
-    private static ConcurrentHashMap<String, String> historialPronosticoClima;
+    private  ConcurrentHashMap<String, String> historialHoroscopo;
+    private  ConcurrentHashMap<String, String> historialPronosticoClima;
  
     public SCServicios(String ipPronostico, int puertoPronostico, String ipHoroscopo, int puertoHoroscopo, ConcurrentHashMap<String, String> cachePronostico, ConcurrentHashMap<String, String> cacheHoroscopo ) throws RemoteException {
         
