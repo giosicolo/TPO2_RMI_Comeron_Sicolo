@@ -10,6 +10,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Cliente.SCServiciosAbstracto;
 
@@ -23,7 +25,6 @@ public class SCServicios extends UnicastRemoteObject implements SCServiciosAbstr
     private static ConcurrentHashMap<String, String> historialHoroscopo;
     private static ConcurrentHashMap<String, String> historialPronosticoClima;
  
-   
     public SCServicios(String ipPronostico, int puertoPronostico, String ipHoroscopo, int puertoHoroscopo, ConcurrentHashMap<String, String> cachePronostico, ConcurrentHashMap<String, String> cacheHoroscopo ) throws RemoteException {
         
         this.ip_SP = ipPronostico;
@@ -51,9 +52,6 @@ public class SCServicios extends UnicastRemoteObject implements SCServiciosAbstr
                         String consultaHoroscopo = consulta.split(" ")[0].toLowerCase();
                         String consultaPronosticoClima = consulta.split(" ")[1];
                         
-                        Socket socketClienteSH = null;
-         
-                        
                         if (validarConsultaHoroscopo(consultaHoroscopo)) {
                             respuestaHoroscopo = historialHoroscopo.get(consultaHoroscopo);
                             if (respuestaHoroscopo == null) {
@@ -66,20 +64,22 @@ public class SCServicios extends UnicastRemoteObject implements SCServiciosAbstr
                         
                         if (validarConsultaPronosticoClima(consultaPronosticoClima)) {
                             respuestaPronostico= historialPronosticoClima.get(consultaPronosticoClima);
-                            if (respuestaPronostico==null) {
-                                respuestaPronostico="";
+                            if (respuestaPronostico == null) {
+                                respuestaPronostico= consultarPronosticoClima(consultaPronosticoClima);
                             }
                         }else 
-                        { respuestaPronostico = "Fecha no valida";}
-                        
-                        
+                        { respuestaPronostico = "Fecha no valida";}    
+                        }else{
+                            respuestaHoroscopo = "Signo no valido";
+                            respuestaPronostico = "Fecha no valida";
                         }
                     }    
         } catch (Exception e) {
             res = "Formato de consulta invalido";
         }
         
-        res=  respuestaHoroscopo + "---" + respuestaPronostico; 
+        res = "\n" + "Respuesta: \n" + "Horoscopo: "+respuestaHoroscopo+"\n"
+            + "Pronostico Clima: "+respuestaPronostico +"\n" ;
         return res;
     }
 
@@ -111,16 +111,46 @@ public class SCServicios extends UnicastRemoteObject implements SCServiciosAbstr
         return esSignoValido;
     }
     
-    private boolean validarConsultaPronosticoClima(String fechaPronosticoClima) {
-        boolean esFechaValida = true;
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        formatoFecha.setLenient(false);
-        
-        try {
-            formatoFecha.parse(fechaPronosticoClima);
-        } catch (ParseException e) {
-            esFechaValida = false;
-        }
-        return esFechaValida;
+    private String consultarPronosticoClima(String fecha) throws RemoteException {
+        String res;
+        SPServiciosAbstracto server;
+                try {
+                    server = (SPServiciosAbstracto) Naming.lookup("//" + ip_SP + ":" + puerto_SP + "/SPServicios");
+                    res = server.consultarPronostico(fecha);
+                    historialPronosticoClima.put(fecha, res);
+                } catch (Exception ex) {
+                    res = "El servidor del pronostico no esta disponible, consulte mas tarde.";
+                    System.out.println("Servidor> Servidor de horoscopo no responde.");
+                }
+        return res;
     }
+
+    private boolean validarConsultaPronosticoClima(String fecha) {
+            // Expresion regular para verificar el formato dd/mm/yyyy
+            String regex = "^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/((19|20)\\d\\d)$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(fecha);
+    
+            if (matcher.matches()) {
+                int dia = Integer.parseInt(matcher.group(1));
+                int mes = Integer.parseInt(matcher.group(2));
+                int anio = Integer.parseInt(matcher.group(3));
+    
+                // Verifica la validez de la fecha
+                if (mes == 2) {
+                    if (dia >= 1 && dia <= (esBisiesto(anio) ? 29 : 28)) {
+                        return true;
+                    }
+                } else if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia >= 1 && dia <= 30) {
+                    return true;
+                } else if (dia >= 1 && dia <= 31) {
+                    return true;
+                }
+            }
+            return false;  
+    }
+
+    private static boolean esBisiesto(int anio) {
+        return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+    } 
 }

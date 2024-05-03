@@ -38,9 +38,7 @@ public class ServidorCentral {
         System.out.println("Error de conexion");}
         
 
-        try {
-            System.out.println("rmi://" + IP_SC + ":" + PUERTO_SC + "/SCServicios");
-        
+        try { 
             historialHoroscopo = new ConcurrentHashMap<String, String>();
             historialPronosticoClima = new ConcurrentHashMap<String, String>();
             

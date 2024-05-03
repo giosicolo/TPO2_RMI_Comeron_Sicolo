@@ -21,8 +21,8 @@ public class ServidorHoroscopo {
 
             SHServiciosAbstracto serverHoroscopo= new SHServicios();
             Naming.rebind("rmi://" + IP_SH + ":" + PUERTO_SH + "/SHServicios", serverHoroscopo);
-            System.out.println("Servidor Horoscopo> Online.");
-            System.out.println("Servidor Horoscopo> Esperando consultas...");
+            System.out.println("Servidor Horoscopo> Activo.");
+            System.out.println("Servidor Horoscopo> Esperando nuevas consultas...");
 
         } catch (Exception e) {
             System.out.println("Error de conexion");
